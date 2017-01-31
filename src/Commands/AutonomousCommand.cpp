@@ -27,6 +27,10 @@ AutonomousCommand::AutonomousCommand(): Command() {
 void AutonomousCommand::Initialize() {
 	//sets motors to brake
 	Robot::driveBase->setCoastBreak(false);
+	RobotMap::sonar1 = new Ultrasonic(0,1);
+	RobotMap::sonar1->SetAutomaticMode(true);
+	RobotMap::sonar2 = new Ultrasonic(2,3);
+	RobotMap::sonar2->SetAutomaticMode(true);
 }
 
 // Called repeatedly when this Command is scheduled to run
@@ -34,6 +38,16 @@ void AutonomousCommand::Execute() {
 
 	cmd.reset(new AutoGearPlacement(true));
 	cmd->Start();
+	bool shouldStop = false;
+	double distance = RobotMap::sonar1->GetRangeInches();
+	if(distance<12){
+		shouldStop = true;
+	}
+	if(shouldStop == false){
+		Robot::driveBase->straightAutonMethod(0.5, distance);
+	}else{
+		Robot::driveBase->straightAutonMethod(0,0);
+	}
 	//Robot::driveBase->straightAutonMethod(.4,1000);
 }
 
